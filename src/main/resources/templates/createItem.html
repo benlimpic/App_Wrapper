@@ -90,7 +90,12 @@
               th:value="${collectionId}"
             />
 
-            <input type="hidden" name="_csrf" th:value="${_csrf?.token}" />
+            <input
+              type="hidden"
+              th:if="${activeProfile != 'demo'}"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}"
+            />
             <!-- File Upload Field -->
 
             <input

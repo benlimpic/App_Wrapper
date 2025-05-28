@@ -95,6 +95,13 @@
                 />
               </div>
 
+              <input
+                type="hidden"
+                th:if="${activeProfile != 'demo'}"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
+
               <div class="w-full">
                 <!-- Location -->
                 <div class="mt-2 mb-2">
