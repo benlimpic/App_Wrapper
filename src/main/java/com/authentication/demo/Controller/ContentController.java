@@ -697,8 +697,8 @@ public class ContentController {
         return handleAuthentication(model, "popular");
     }
 
-    // @Value("${spring.profiles.active:}")
-    // private String activeProfile;
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
 
     private String handleAuthentication(Model model, String viewName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -711,14 +711,14 @@ public class ContentController {
             }
         }
 
-        // // Auto-inject demo user if profile is demo
-        // if ("demo".equals(activeProfile)) {
-        //     Optional<UserModel> demoUser = repository.findByUsername("music-man");
-        //     if (demoUser.isPresent()) {
-        //         model.addAttribute("user", demoUser.get());
-        //         return viewName;
-        //     }
-        // }
+        // Auto-inject demo user if profile is demo
+        if ("demo".equals(activeProfile)) {
+            Optional<UserModel> demoUser = repository.findByUsername("music-man");
+            if (demoUser.isPresent()) {
+                model.addAttribute("user", demoUser.get());
+                return viewName;
+            }
+        }
 
         return "redirect:/";
     }
