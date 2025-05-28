@@ -239,7 +239,9 @@ public class ContentController {
     @GetMapping("/update-profile")
     public String updateProfile(Model model) {
 
-        //Base URL 
+        System.out.println(">>> baseUrl = " + baseUrl);
+
+        //Base URL
         model.addAttribute("baseUrl", baseUrl);
 
         return handleAuthentication(model, "updateProfile");
@@ -253,7 +255,9 @@ public class ContentController {
     @GetMapping("/create-collection")
     public String createCollection(Model model) {
 
-        //Base URL 
+        System.out.println(">>> baseUrl = " + baseUrl);
+
+        //Base URL
         model.addAttribute("baseUrl", baseUrl);
 
         return handleAuthentication(model, "createCollection");
@@ -452,6 +456,8 @@ public class ContentController {
     @GetMapping("/create-item/{collectionId}")
     public String createItem(@PathVariable("collectionId") Long collectionId, Model model) {
 
+        System.out.println(">>> baseUrl = " + baseUrl);
+
         //Base URL
         model.addAttribute("baseUrl", baseUrl);
 
@@ -644,6 +650,9 @@ public class ContentController {
 
     @GetMapping("/update-item/{id}")
     public String updateItem(@PathVariable("id") Long itemId, Model model) {
+
+        System.out.println(">>> baseUrl = " + baseUrl);
+
         ItemModel item = itemService.getItemById(itemId);
         if (item == null) {
             return "redirect:/profile"; // Handle missing item
@@ -658,6 +667,9 @@ public class ContentController {
 
     @GetMapping("/update-collection/{id}")
     public String updateCollection(@PathVariable("id") Long collectionId, Model model) {
+
+        System.out.println(">>> baseUrl = " + baseUrl);
+
         // Fetch the collection by ID
         CollectionModel collection = collectionService.getCollectionById(collectionId);
         if (collection == null) {
@@ -685,6 +697,9 @@ public class ContentController {
         return handleAuthentication(model, "popular");
     }
 
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
     private String handleAuthentication(Model model, String viewName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getName() != null && !authentication.getName().isEmpty()) {
@@ -695,7 +710,17 @@ public class ContentController {
                 return viewName;
             }
         }
-        return "redirect:/login";
+
+        // Auto-inject demo user if profile is demo
+        if ("demo".equals(activeProfile)) {
+            Optional<UserModel> demoUser = repository.findByUsername("music-man");
+            if (demoUser.isPresent()) {
+                model.addAttribute("user", demoUser.get());
+                return viewName;
+            }
+        }
+
+        return "redirect:/";
     }
 
 }
