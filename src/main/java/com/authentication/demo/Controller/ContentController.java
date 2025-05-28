@@ -251,16 +251,11 @@ public class ContentController {
     public String updateUserDetails(Model model) {
         return handleAuthentication(model, "updateUserDetails");
     }
-
+    
     @GetMapping("/create-collection")
     public String createCollection(Model model) {
-
-        System.out.println(">>> baseUrl = " + baseUrl);
-
-        //Base URL
-        model.addAttribute("baseUrl", baseUrl);
-
-        return handleAuthentication(model, "createCollection");
+        model.addAttribute("baseUrl", "https://shelved-demo-app.benlimpic.info"); // hardcoded just to test
+        return "createCollection";
     }
 
     @GetMapping("/collection/{id}")
