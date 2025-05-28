@@ -48,9 +48,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .anyRequest().permitAll()
         )
         .csrf(csrf -> csrf.disable())
-        .headers(headers -> headers
-            .frameOptions(frameOptions -> frameOptions.disable())
-        )
+        .headers(headers -> headers.frameOptions().disable())
         .exceptionHandling(e -> e
             .accessDeniedHandler((request, response, accessDeniedException) -> {
                 response.sendRedirect("/index");
