@@ -43,15 +43,20 @@ public class DemoSecurityConfig {
     @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-        .csrf(csrf -> csrf.disable())
-        .formLogin(form -> form.disable())
-        .logout(logout -> logout.disable())
-        .headers(headers -> headers
-            .frameOptions(frame -> frame.disable()) // Allow iframes from anywhere
-            .contentSecurityPolicy(csp -> csp.policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:")) // Relaxed for demo
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login", "/logout").denyAll()
+            .anyRequest().permitAll()
         )
+        .csrf(csrf -> csrf.disable())
+        .headers(headers -> {
+            headers
+                .frameOptions(frame -> frame.disable()) // Allow iframes from anywhere
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:")); // Relaxed for demo
+        })
         .exceptionHandling(e -> e
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                response.sendRedirect("/index");
+            })
             .authenticationEntryPoint((request, response, authException) -> {
                 response.setStatus(HttpServletResponse.SC_OK);
             })
