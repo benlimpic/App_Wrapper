@@ -24,6 +24,11 @@ spring:
 
 server:
   port: 7070
-
+  servlet:
+    session:
+      cookie:
+        domain: .benlimpic.info
+        same-site: none
+        secure: true
 app:
   base-url: https://shelved-app.benlimpic.info
