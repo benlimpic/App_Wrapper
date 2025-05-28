@@ -61,9 +61,6 @@ public class ContentController {
         this.commentService = commentService;
     }
 
-    @Value("${app.base-url}")
-    private String baseUrl;
-
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "logout", required = false) String logout,
