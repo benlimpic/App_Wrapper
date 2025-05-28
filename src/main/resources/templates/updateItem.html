@@ -59,7 +59,7 @@
         <form
           id="updateItemForm"
           class="flex flex-col items-center justify-center w-full"
-          th:action="@{/update-item/{id}(id=${item.id})}"
+          th:action="${baseUrl + '/update_item/' + item.id}"
           method="post"
           enctype="multipart/form-data"
         >

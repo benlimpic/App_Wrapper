@@ -33,5 +33,9 @@ server:
   servlet:
     session:
       cookie:
+        domain: .benlimpic.info
         same-site: none
         secure: true
+
+app:
+  base-url: https://shelved-demo-app.benlimpic.info

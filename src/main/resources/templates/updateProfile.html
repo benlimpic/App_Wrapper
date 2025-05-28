@@ -33,11 +33,11 @@
         </ul>
       </nav>
     </header>
-    <main class="overflow-auto bottom-0">
+    <main class="bottom-0 overflow-auto">
 
       
       <!-- ERROR AND SUCCESS HANDLING -->
-      <div class="errorSuccessHandlingBox hidden">
+      <div class="hidden errorSuccessHandlingBox">
         <div
           id="successMessageDiv"
           class="success"
@@ -55,18 +55,18 @@
 
       <div class="container">
         <div class="box">
-          <div class="flex-col justify-center items-center w-full px-4">
+          <div class="flex-col items-center justify-center w-full px-4">
             <form
               id="updateProfileForm"
-              th:action="@{/update_profile}"
+              th:action="${baseUrl + '/update-profile'}"
               method="post"
               enctype="multipart/form-data"
             >
-              <div class="flex flex-col justify-center items-center mt-8 p-2">
+              <div class="flex flex-col items-center justify-center p-2 mt-8">
                 <!-- PROFILE PICTURE -->
                 <a>
                   <img
-                    class="h-32 w-32 rounded-full bg-white"
+                    class="w-32 h-32 bg-white rounded-full"
                     id="previewImage"
                     th:src="${user != null and user.profilePictureUrl != null and user.profilePictureUrl != ''} ? ${user.profilePictureUrl} : '/images/default-profile-photo.png'"
                     alt="Profile Picture"
@@ -74,8 +74,8 @@
                 </a>
 
                 <!-- UPDATE PROFILE PICTURE BUTTON -->
-                <a href="#" id="triggerUpload" class="mt-2 pb-4">
-                  <span class="text-sm font-semibold text-blue-500 mb-1">
+                <a href="#" id="triggerUpload" class="pb-4 mt-2">
+                  <span class="mb-1 text-sm font-semibold text-blue-500">
                     Update Profile Picture
                   </span>
                 </a>
@@ -101,7 +101,7 @@
                   <label class="label text-slate-800" for="Location">Location</label>
                   <input
                     id="locationInput"
-                    class="col-span-4 text-sm p-2 border-y border-slate-200 rounded-none"
+                    class="col-span-4 p-2 text-sm rounded-none border-y border-slate-200"
                     name="location"
                     th:value="${user != null and user.location != null} ? ${user.location} : ''"
                     placeholder="Location"
@@ -114,7 +114,7 @@
                   <label class="label text-slate-800" for="Website">Website</label>
                   <input
                   id="websiteInput"
-                  class="col-span-4 text-sm p-2 border-y border-slate-200 rounded-none"
+                  class="col-span-4 p-2 text-sm rounded-none border-y border-slate-200"
                   name="website"
                   th:value="${user != null and user.website != null} ? ${user.website} : ''"
                   placeholder="Website"
@@ -127,7 +127,7 @@
                 <label class="label text-slate-800" for="Biography">Biography</label>
                 <textarea
                   id="biographyInput"
-                  class="col-span-4 text-sm p-2 border-y border-slate-200"
+                  class="col-span-4 p-2 text-sm border-y border-slate-200"
                   name="biography"
                   th:text="${user != null and user.biography != null} ? ${user.biography} : ''"
                   placeholder="Biography"
@@ -135,7 +135,7 @@
                 ></textarea>
               </div>
               <button
-                class="button bg-blue-600 hover:bg-blue-800 mx-auto"
+                class="mx-auto bg-blue-600 button hover:bg-blue-800"
                 type="submit">
                   Save Changes
               </button>

@@ -48,11 +48,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .anyRequest().permitAll()
         )
         .csrf(csrf -> csrf.disable())
-        .headers(headers -> {
-            headers
-                .frameOptions(frame -> frame.disable()) // Allow iframes from anywhere
-                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src * 'unsafe-inline' 'unsafe-eval' data: blob:")); // Relaxed for demo
-        })
+        .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
         .exceptionHandling(e -> e
             .accessDeniedHandler((request, response, accessDeniedException) -> {
                 response.sendRedirect("/index");

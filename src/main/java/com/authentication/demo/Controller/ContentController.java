@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.ListUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -59,6 +60,9 @@ public class ContentController {
         this.likeRepository = likeRepository;
         this.commentService = commentService;
     }
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
@@ -234,6 +238,10 @@ public class ContentController {
 
     @GetMapping("/update-profile")
     public String updateProfile(Model model) {
+
+        //Base URL 
+        model.addAttribute("baseUrl", baseUrl);
+
         return handleAuthentication(model, "updateProfile");
     }
 
@@ -244,6 +252,10 @@ public class ContentController {
 
     @GetMapping("/create-collection")
     public String createCollection(Model model) {
+
+        //Base URL 
+        model.addAttribute("baseUrl", baseUrl);
+
         return handleAuthentication(model, "createCollection");
     }
 
@@ -439,6 +451,10 @@ public class ContentController {
 
     @GetMapping("/create-item/{collectionId}")
     public String createItem(@PathVariable("collectionId") Long collectionId, Model model) {
+
+        //Base URL
+        model.addAttribute("baseUrl", baseUrl);
+
         // Add the collectionId to the model
         model.addAttribute("collectionId", collectionId);
         return handleAuthentication(model, "createItem");
@@ -632,6 +648,10 @@ public class ContentController {
         if (item == null) {
             return "redirect:/profile"; // Handle missing item
         }
+
+        //Base URL
+        model.addAttribute("baseUrl", baseUrl);
+
         model.addAttribute("item", item);
         return handleAuthentication(model, "updateItem");
     }
@@ -643,6 +663,9 @@ public class ContentController {
         if (collection == null) {
             return "redirect:/profile"; // Redirect if the collection is not found
         }
+
+        //Base URL
+        model.addAttribute("baseUrl", baseUrl);
 
         // Add the collection to the model
         model.addAttribute("collection", collection);

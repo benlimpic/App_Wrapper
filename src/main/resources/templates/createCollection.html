@@ -60,7 +60,7 @@
         <form
           id="createCollectionForm"
           class="flex flex-col items-center justify-center w-full"
-          action="/create_collection"
+          th:action="${baseUrl + '/create_collection'}"
           method="post"
           enctype="multipart/form-data"
         >
