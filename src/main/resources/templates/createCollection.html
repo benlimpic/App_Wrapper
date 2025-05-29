@@ -58,7 +58,8 @@
         </nav>
 
         <form
-          th:action="@{${baseUrl}/create_collection}"
+          th:with="url=${baseUrl}"
+          th:action="@{__${url}__/create_collection}"
           method="post"
           enctype="multipart/form-data"
           class="flex flex-col items-center justify-center w-full"
