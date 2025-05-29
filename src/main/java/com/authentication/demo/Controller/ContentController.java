@@ -256,7 +256,7 @@ public class ContentController {
     @GetMapping("/create-collection")
     public String showCreateCollectionPage(Model model) {
         // any required model attributes
-        return "createCollection";
+        return handleAuthentication(model, "createCollection");
     }
 
     @GetMapping("/collection/{id}")
