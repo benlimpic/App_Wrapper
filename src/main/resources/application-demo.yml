@@ -1,8 +1,5 @@
 spring:
   datasource:
-    # url: jdbc:postgresql://localhost:5432/dev_shelved
-    # username: shelved_user
-    # password: shelved_pass
     url: ${JDBC_DATABASE_URL}
     username: ${JDBC_DATABASE_USERNAME}
     password: ${JDBC_DATABASE_PASSWORD}
@@ -11,7 +8,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    # Optional: enable SQL logging for dev
     show-sql: true
     properties:
       hibernate:
@@ -29,11 +25,11 @@ aws:
     AWS_S3_BUCKET_ITEM_IMAGES: ${AWS_S3_BUCKET_ITEM_IMAGES}
 
 server:
-  port: 8080
+  port: ${PORT:8080} # 👈 This is crucial for Heroku
   servlet:
     session:
       cookie:
-        domain: .benlimpic.info
+        domain: .benlimpic.info # ✅ enables shared session across subdomains if needed
         same-site: none
         secure: true
 
