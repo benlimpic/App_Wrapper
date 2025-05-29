@@ -59,7 +59,7 @@
 
         <form
           th:with="url=${baseUrl}"
-          th:action="@{__${url}__/create_collection}"
+          th:action="${url + '/create_collection'}"
           method="post"
           enctype="multipart/form-data"
           class="flex flex-col items-center justify-center w-full"
