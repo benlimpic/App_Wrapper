@@ -268,12 +268,9 @@ public class ContentController {
     }
 
     @GetMapping("/create-collection")
-    public String createCollection(Model model) {
-
-        //Base URL
-        model.addAttribute("baseUrl", appProperties.getBaseUrl());
-
-        return handleAuthentication(model, "createCollection");
+    public String showCreateCollectionPage(Model model) {
+        // any required model attributes
+        return "create-collection";
     }
 
     @GetMapping("/collection/{id}")

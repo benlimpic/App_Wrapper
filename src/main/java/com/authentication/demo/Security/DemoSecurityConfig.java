@@ -47,7 +47,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/login", "/logout").denyAll()
-            .requestMatchers("/create_collection").permitAll()
+            .requestMatchers("/create-collection", "/index", "/css/**", "/js/**", "/images/**").permitAll()
             .anyRequest().authenticated()
         )
         .exceptionHandling(e -> e
