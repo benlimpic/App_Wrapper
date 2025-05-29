@@ -33,25 +33,26 @@ public class CollectionController {
 
     @PostMapping("/create_collection")
     public String postCollection(
-        @RequestParam("title") String title,
-        @RequestParam(value = "caption", required = false) String caption,
+        @RequestParam("collectionTitle") String title,
+        @RequestParam(value = "collectionCaption", required = false) String caption,
         @RequestParam("collectionImage") MultipartFile collectionImage,
         RedirectAttributes redirectAttributes) throws IOException {
 
-        System.out.println("POST /create_collection called");
+        System.out.println("▶️ POST /create_collection hit");
         System.out.println("Title: " + title);
         System.out.println("Caption: " + caption);
-        System.out.println("Image: " + (collectionImage != null ? collectionImage.getOriginalFilename() : "null"));
+        System.out.println("File name: " + (collectionImage != null ? collectionImage.getOriginalFilename() : "null"));
+        System.out.println("File empty? " + (collectionImage == null || collectionImage.isEmpty()));
 
         if (title == null || title.isEmpty()) {
-            System.out.println("Validation failed: missing title");
             redirectAttributes.addFlashAttribute("error", "Title is required");
+            System.out.println("❌ Title is missing");
             return "redirect:/create-collection";
         }
 
         if (collectionImage == null || collectionImage.isEmpty()) {
-            System.out.println("Validation failed: missing image");
             redirectAttributes.addFlashAttribute("error", "Image is required");
+            System.out.println("❌ Image is missing");
             return "redirect:/create-collection";
         }
 
@@ -61,19 +62,18 @@ public class CollectionController {
                 "caption", caption != null ? caption : ""
             );
 
-            System.out.println("Calling collectionService...");
             collectionService.createCollection(collectionDetails, collectionImage);
-            System.out.println("Collection created.");
-
             redirectAttributes.addFlashAttribute("message", "Collection created successfully");
+            System.out.println("✅ Collection created. Redirecting to /profile");
             return "redirect:/profile";
         } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            System.out.println("Error during collection creation: " + e.getMessage());
+            System.err.println("❌ Error creating collection: " + e.getMessage());
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/create-collection";
         }
     }
+
 
 
     // UPDATE COLLECTION

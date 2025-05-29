@@ -75,7 +75,7 @@ public class CollectionService {
         throw new CollectionCreationException("Collection image cannot be empty");
       }
 
-      if (params.get("title") == null || params.get("title").isEmpty()) {
+      if (params.get("collectionTitle") == null || params.get("collectionTitle").isEmpty()) {
         throw new CollectionCreationException("Title is required");
       }
 
@@ -88,8 +88,8 @@ public class CollectionService {
 
       CollectionModel newCollection = new CollectionModel();
       newCollection.setUser(userService.getUserById(userId));
-      newCollection.setTitle(params.get("title"));
-      newCollection.setCaption(params.get("caption"));
+      newCollection.setTitle(params.get("collectionTitle"));
+      newCollection.setCaption(params.get("collectionCaption"));
       newCollection.setImageUrl(saveCollectionImage(processedFile));
       newCollection.setCreatedAt(createdAt);
       newCollection.setUpdatedAt(updatedAt);
