@@ -56,89 +56,14 @@
         </nav>
 
         <form
-          th:action="@{/create_collection}"
+          action="/create_collection"
           method="post"
           enctype="multipart/form-data"
         >
-          <div class="square">
-            <img
-              class="w-full aspect-square"
-              id="previewImage"
-              th:src="${'/images/collection_image.png'}"
-              alt="Default Collection Image"
-            />
-          </div>
-
-          <div
-            class="flex flex-col items-center justify-center w-full px-4 mt-4"
-          >
-            <div>
-              <a href="#" id="triggerUpload" class="mt-2">
-                <span class="text-sm font-semibold text-blue-500">
-                  Update Collection Cover
-                </span>
-              </a>
-            </div>
-
-            <input
-              type="hidden"
-              th:if="${activeProfile != 'demo'}"
-              th:name="${_csrf.parameterName}"
-              th:value="${_csrf.token}"
-            />
-
-            <!-- File Upload Field -->
-
-            <input
-              type="file"
-              id="hiddenFileInput"
-              name="collectionImage"
-              class="hidden"
-              accept="image/*"
-            />
-
-            <!-- Title Field -->
-            <div
-              class="flex flex-col justify-center w-full h-auto items-between"
-            >
-              <div class="w-full labelInputBox">
-                <label class="label" for="title">Title:</label>
-                <input
-                  class="w-full input"
-                  type="text"
-                  id="collectionTitle"
-                  name="title"
-                  placeholder="Title"
-                />
-              </div>
-            </div>
-
-            <!-- Caption Field -->
-            <div
-              class="flex flex-col justify-center w-full h-auto items-between"
-            >
-              <div class="w-full labelInputBox">
-                <label class="label" for="caption">Caption:</label>
-                <input
-                  class="w-full input"
-                  type="text"
-                  id="caption"
-                  name="collectionCaption"
-                  placeholder="Caption"
-                />
-              </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="flex flex-row items-center justify-center mt-4">
-              <button
-                class="bg-blue-600 button hover:bg-blue-800"
-                type="submit"
-              >
-                Create Collection
-              </button>
-            </div>
-          </div>
+          <input type="text" name="collectionTitle" required />
+          <input type="text" name="collectionCaption" />
+          <input type="file" name="collectionImage" accept="image/*" required />
+          <button type="submit">Submit</button>
         </form>
       </div>
     </main>

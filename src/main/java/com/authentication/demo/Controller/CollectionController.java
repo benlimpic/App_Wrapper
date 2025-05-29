@@ -58,8 +58,8 @@ public class CollectionController {
 
         try {
             Map<String, String> collectionDetails = Map.of(
-                "title", title,
-                "caption", caption != null ? caption : ""
+                "collectionTitle", title,
+                "collectionCaption", caption != null ? caption : ""
             );
 
             collectionService.createCollection(collectionDetails, collectionImage);
@@ -73,6 +73,7 @@ public class CollectionController {
             return "redirect:/create-collection";
         }
     }
+
 
 
 
