@@ -31,37 +31,39 @@ public class CollectionController {
         this.collectionRepository = collectionRepository;
     }
 
-    // CREATE NEW COLLECTION
     @PostMapping("/create_collection")
-    public String postCollection(@RequestParam Map<String, String> collectionDetails,
-            @RequestParam MultipartFile collectionImage,
-            RedirectAttributes redirectAttributes) throws IOException {
+    public String postCollection(
+        @RequestParam("title") String title,
+        @RequestParam(value = "caption", required = false) String caption,
+        @RequestParam("collectionImage") MultipartFile collectionImage,
+        RedirectAttributes redirectAttributes) throws IOException {
 
-            if (collectionDetails == null) {
-                redirectAttributes.addFlashAttribute("error", "Collection cannot be empty");
-                return "redirect:/create-collection";
-            }
-        
+        if (title == null || title.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Title is required");
+            return "redirect:/create-collection";
+        }
 
-            // Validate collection details
-            if (collectionDetails.get("title") == null || collectionDetails.get("title").isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Collection title cannot be empty");
-                return "redirect:/create-collection";
-            }
-            if (collectionImage == null || collectionImage.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Collection image cannot be empty");
-                return "redirect:/create-collection";
-            }
-            
-            try {
-                collectionService.createCollection(collectionDetails, collectionImage);
-                redirectAttributes.addFlashAttribute("message", "Collection created successfully");
-                return "redirect:/profile";
-            } catch (CollectionCreationException | IOException e) {
-                redirectAttributes.addFlashAttribute("error", e.getMessage());
-                return "redirect:/create-collection";
-            }
+        if (collectionImage == null || collectionImage.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Image is required");
+            return "redirect:/create-collection";
+        }
+
+        try {
+            Map<String, String> collectionDetails = Map.of(
+                "title", title,
+                "caption", caption != null ? caption : ""
+            );
+
+            collectionService.createCollection(collectionDetails, collectionImage);
+            redirectAttributes.addFlashAttribute("message", "Collection created successfully");
+            return "redirect:/profile";
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the error
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/create-collection";
+        }
     }
+
 
     // UPDATE COLLECTION
     @PostMapping("/update-collection/{id}")
