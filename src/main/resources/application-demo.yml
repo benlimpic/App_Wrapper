@@ -20,7 +20,7 @@ spring:
         format_sql: true
 
 server:
-  port: 9090
+  port: ${PORT:9090}
   servlet:
     session:
       cookie:
