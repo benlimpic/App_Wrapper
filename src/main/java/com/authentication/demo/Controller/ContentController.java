@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.ListUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.authentication.demo.Config.AppProperties;
 import com.authentication.demo.Interface.PopularEntry;
 import com.authentication.demo.Model.CollectionModel;
 import com.authentication.demo.Model.CommentModel;
@@ -33,6 +36,8 @@ import com.authentication.demo.Service.LikeService;
 import com.authentication.demo.Service.PopularService;
 import com.authentication.demo.Service.UserService;
 
+import jakarta.annotation.PostConstruct;
+
 @Controller
 public class ContentController {
 
@@ -45,11 +50,14 @@ public class ContentController {
     private final LikeRepository likeRepository;
     private final CommentService commentService;
     private final PopularService popularService;
+    private final AppProperties appProperties;
+
+    private static final Logger log = LoggerFactory.getLogger(ContentController.class);
 
     public ContentController(UserRepository repository, UserService userService, CollectionService collectionService,
             ItemService itemService, FollowService followService, LikeService likeService,
             LikeRepository likeRepository,
-            CommentService commentService, PopularService popularService) {
+            CommentService commentService, PopularService popularService, AppProperties appProperties) {
         this.popularService = popularService;
         this.repository = repository;
         this.userService = userService;
@@ -59,6 +67,18 @@ public class ContentController {
         this.likeService = likeService;
         this.likeRepository = likeRepository;
         this.commentService = commentService;
+        this.appProperties = appProperties;
+    }
+
+
+
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
+    @PostConstruct
+    public void init() {
+        log.info("Active profile: {}", activeProfile);
+        log.info("Base URL: {}", appProperties.getBaseUrl());
     }
 
     @GetMapping("/login")
@@ -236,10 +256,8 @@ public class ContentController {
     @GetMapping("/update-profile")
     public String updateProfile(Model model) {
 
-        System.out.println(">>> baseUrl = " + baseUrl);
-
         //Base URL
-        model.addAttribute("baseUrl", baseUrl);
+        model.addAttribute("baseUrl", appProperties.getBaseUrl());
 
         return handleAuthentication(model, "updateProfile");
     }
@@ -252,10 +270,8 @@ public class ContentController {
     @GetMapping("/create-collection")
     public String createCollection(Model model) {
 
-        System.out.println(">>> baseUrl = " + baseUrl);
-
         //Base URL
-        model.addAttribute("baseUrl", baseUrl);
+        model.addAttribute("baseUrl", appProperties.getBaseUrl());
 
         return handleAuthentication(model, "createCollection");
     }
@@ -453,10 +469,8 @@ public class ContentController {
     @GetMapping("/create-item/{collectionId}")
     public String createItem(@PathVariable("collectionId") Long collectionId, Model model) {
 
-        System.out.println(">>> baseUrl = " + baseUrl);
-
         //Base URL
-        model.addAttribute("baseUrl", baseUrl);
+        model.addAttribute("baseUrl", appProperties.getBaseUrl());
 
         // Add the collectionId to the model
         model.addAttribute("collectionId", collectionId);
@@ -648,15 +662,13 @@ public class ContentController {
     @GetMapping("/update-item/{id}")
     public String updateItem(@PathVariable("id") Long itemId, Model model) {
 
-        System.out.println(">>> baseUrl = " + baseUrl);
-
         ItemModel item = itemService.getItemById(itemId);
         if (item == null) {
             return "redirect:/profile"; // Handle missing item
         }
 
         //Base URL
-        model.addAttribute("baseUrl", baseUrl);
+        model.addAttribute("baseUrl", appProperties.getBaseUrl());
 
         model.addAttribute("item", item);
         return handleAuthentication(model, "updateItem");
@@ -665,8 +677,6 @@ public class ContentController {
     @GetMapping("/update-collection/{id}")
     public String updateCollection(@PathVariable("id") Long collectionId, Model model) {
 
-        System.out.println(">>> baseUrl = " + baseUrl);
-
         // Fetch the collection by ID
         CollectionModel collection = collectionService.getCollectionById(collectionId);
         if (collection == null) {
@@ -674,7 +684,7 @@ public class ContentController {
         }
 
         //Base URL
-        model.addAttribute("baseUrl", baseUrl);
+        model.addAttribute("baseUrl", appProperties.getBaseUrl());
 
         // Add the collection to the model
         model.addAttribute("collection", collection);
@@ -693,9 +703,6 @@ public class ContentController {
         model.addAttribute("partitionedEntries", partitioned);
         return handleAuthentication(model, "popular");
     }
-
-    @Value("${spring.profiles.active:}")
-    private String activeProfile;
 
     private String handleAuthentication(Model model, String viewName) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
