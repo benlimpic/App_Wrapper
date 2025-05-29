@@ -43,12 +43,13 @@ public class DemoSecurityConfig {
     @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/logout").denyAll()
-            .anyRequest().permitAll()
-        )
         .csrf(csrf -> csrf.disable())
         .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login", "/logout").denyAll()
+            .requestMatchers("/create_collection").permitAll()
+            .anyRequest().authenticated()
+        )
         .exceptionHandling(e -> e
             .accessDeniedHandler((request, response, accessDeniedException) -> {
                 response.sendRedirect("/index");
@@ -61,9 +62,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     // Automatically authenticate demo user on every request
     http.addFilterBefore((request, response, chain) -> {
         UserModel demoUser = null;
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                demoUser = userRepository.findByUsername("music-man").orElse(null);
-            }
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            demoUser = userRepository.findByUsername("music-man").orElse(null);
+        }
         if (demoUser != null) {
             UserDetails userDetails = User.withUsername(demoUser.getUsername())
                 .password(demoUser.getPassword())
