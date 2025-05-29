@@ -82,6 +82,7 @@
 
             <input
               type="hidden"
+              th:if="${activeProfile != 'demo'}"
               th:name="${_csrf.parameterName}"
               th:value="${_csrf.token}"
             />

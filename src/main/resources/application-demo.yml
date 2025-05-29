@@ -24,7 +24,7 @@ server:
   servlet:
     session:
       cookie:
-        domain: .benlimpic.info
+        domain: benlimpic.info
         same-site: none
         secure: true
 

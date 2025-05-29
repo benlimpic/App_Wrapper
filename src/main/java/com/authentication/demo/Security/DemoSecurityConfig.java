@@ -47,8 +47,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/login", "/logout").denyAll()
-            .requestMatchers("/create-collection", "/index", "/css/**", "/js/**", "/images/**").permitAll()
-            .anyRequest().authenticated()
+            .anyRequest().permitAll()
         )
         .exceptionHandling(e -> e
         
@@ -56,6 +55,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                 System.out.println("UNAUTHENTICATED ACCESS: " + request.getRequestURI());
                 response.sendRedirect("/index");
             })
+
             .authenticationEntryPoint((request, response, authException) -> {
                 System.out.println("UNAUTHENTICATED ACCESS: " + request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_OK);
