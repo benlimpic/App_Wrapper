@@ -41,7 +41,7 @@
             <a href="/profile">
               <img
                 class="round-image"
-                th:src="${user != null && user.profilePictureUrl != null ? user.profilePictureUrl : '/images/default-profile-photo.png'}"
+                th:src="${user?.profilePictureUrl ?: '/images/default-profile-photo.png'}"
                 alt="Profile Picture"
               />
             </a>
@@ -58,11 +58,11 @@
         </nav>
 
         <form
-          id="createCollectionForm"
-          class="flex flex-col items-center justify-center w-full"
-          th:action="${baseUrl + '/create_collection'}"
+          th:action="@{${baseUrl}/create_collection}"
           method="post"
           enctype="multipart/form-data"
+          class="flex flex-col items-center justify-center w-full"
+          id="createCollectionForm"
         >
           <div class="square">
             <img
@@ -84,12 +84,13 @@
               </a>
             </div>
 
-            <input
-              type="hidden"
-              th:if="${activeProfile != 'demo'}"
-              th:name="${_csrf.parameterName}"
-              th:value="${_csrf.token}"
-            />
+            <th:block th:if="${_csrf != null and activeProfile != 'demo'}">
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
+            </th:block>
             <!-- File Upload Field -->
 
             <input
