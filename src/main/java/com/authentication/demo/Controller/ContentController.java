@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.apache.commons.collections4.ListUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -35,8 +34,6 @@ import com.authentication.demo.Service.ItemService;
 import com.authentication.demo.Service.LikeService;
 import com.authentication.demo.Service.PopularService;
 import com.authentication.demo.Service.UserService;
-
-import jakarta.annotation.PostConstruct;
 
 @Controller
 public class ContentController {
@@ -68,17 +65,6 @@ public class ContentController {
         this.likeRepository = likeRepository;
         this.commentService = commentService;
         this.appProperties = appProperties;
-    }
-
-
-
-    @Value("${spring.profiles.active:}")
-    private String activeProfile;
-
-    @PostConstruct
-    public void init() {
-        log.info("Active profile: {}", activeProfile);
-        log.info("Base URL: {}", appProperties.getBaseUrl());
     }
 
     @GetMapping("/login")
@@ -709,16 +695,6 @@ public class ContentController {
                 if (user.isPresent()) {
                     model.addAttribute("user", user.get());
                     return viewName;
-                }
-            }
-
-            if ("demo".equals(activeProfile)) {
-                Optional<UserModel> demoUser = repository.findByUsername("music-man");
-                if (demoUser.isPresent()) {
-                    model.addAttribute("user", demoUser.get());
-                    return viewName;
-                } else {
-                    System.err.println("Demo user 'music-man' not found.");
                 }
             }
 
