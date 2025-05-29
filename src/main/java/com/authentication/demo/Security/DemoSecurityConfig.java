@@ -11,19 +11,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.authentication.demo.Repository.UserRepository;
-
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @Profile("demo")
 public class DemoSecurityConfig {
 
-    private final UserRepository userRepository;
     private final DemoAuthenticationFilter demoAuthenticationFilter;
 
-    public DemoSecurityConfig(UserRepository userRepository, DemoAuthenticationFilter demoAuthenticationFilter) {
-        this.userRepository = userRepository;
+    public DemoSecurityConfig(DemoAuthenticationFilter demoAuthenticationFilter) {
         this.demoAuthenticationFilter = demoAuthenticationFilter;
     }
 
