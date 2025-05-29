@@ -51,10 +51,13 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             .anyRequest().authenticated()
         )
         .exceptionHandling(e -> e
+        
             .accessDeniedHandler((request, response, accessDeniedException) -> {
+                System.out.println("UNAUTHENTICATED ACCESS: " + request.getRequestURI());
                 response.sendRedirect("/index");
             })
             .authenticationEntryPoint((request, response, authException) -> {
+                System.out.println("UNAUTHENTICATED ACCESS: " + request.getRequestURI());
                 response.setStatus(HttpServletResponse.SC_OK);
             })
         );
