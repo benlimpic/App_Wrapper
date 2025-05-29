@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -17,11 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @Profile("demo")
 public class DemoSecurityConfig {
 
-    private final DemoAuthenticationFilter demoAuthenticationFilter;
-
-    public DemoSecurityConfig(DemoAuthenticationFilter demoAuthenticationFilter) {
-        this.demoAuthenticationFilter = demoAuthenticationFilter;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,7 +29,7 @@ public class DemoSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        return http
             .csrf(csrf -> csrf.disable())
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
             .authorizeHttpRequests(auth -> auth
@@ -57,9 +51,7 @@ public class DemoSecurityConfig {
                     res.setStatus(HttpServletResponse.SC_OK);
                 })
             )
-            .addFilterAfter(demoAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // <- ✅
-
-        return http.build();
+            .build();
     }
 }
 
