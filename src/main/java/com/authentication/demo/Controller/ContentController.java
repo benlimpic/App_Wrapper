@@ -705,23 +705,28 @@ public class ContentController {
     }
 
     private String handleAuthentication(Model model, String viewName) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getName() != null && !authentication.getName().isEmpty()) {
-            Optional<UserModel> user = repository.findByUsername(authentication.getName());
-            if (user.isPresent()) {
-                UserModel userModel = user.get();
-                model.addAttribute("user", userModel);
-                return viewName;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getName() != null && !authentication.getName().isEmpty()) {
+                Optional<UserModel> user = repository.findByUsername(authentication.getName());
+                if (user.isPresent()) {
+                    model.addAttribute("user", user.get());
+                    return viewName;
+                }
             }
-        }
 
-        // Auto-inject demo user if profile is demo
-        if ("demo".equals(activeProfile)) {
-            Optional<UserModel> demoUser = repository.findByUsername("music-man");
-            if (demoUser.isPresent()) {
-                model.addAttribute("user", demoUser.get());
-                return viewName;
+            if ("demo".equals(activeProfile)) {
+                Optional<UserModel> demoUser = repository.findByUsername("music-man");
+                if (demoUser.isPresent()) {
+                    model.addAttribute("user", demoUser.get());
+                    return viewName;
+                } else {
+                    System.err.println("Demo user 'music-man' not found.");
+                }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Shows in Heroku logs
         }
 
         return "redirect:/";
