@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.authentication.demo.Model.UserModel;
 import com.authentication.demo.Repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,47 +40,48 @@ public class DemoSecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/logout").denyAll()
-            .anyRequest().permitAll()
-        )
-        .exceptionHandling(e -> e
-        
-            .accessDeniedHandler((request, response, accessDeniedException) -> {
-                System.out.println("UNAUTHENTICATED ACCESS: " + request.getRequestURI());
-                response.sendRedirect("/index");
-            })
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // fine for demo
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/create-collection",    // GET for form
+                    "/create_collection",    // POST for form submit
+                    "/profile",              // redirect destination
+                    "/css/**", "/js/**", "/images/**"
+                ).permitAll()
+                .anyRequest().authenticated() // require auth elsewhere
+            )
+            .exceptionHandling(e -> e
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    System.out.println("UNAUTHENTICATED ACCESS (denied): " + request.getRequestURI());
+                    response.sendRedirect("/index");
+                })
+                .authenticationEntryPoint((request, response, authException) -> {
+                    System.out.println("UNAUTHENTICATED ACCESS (entrypoint): " + request.getRequestURI());
+                    response.setStatus(HttpServletResponse.SC_OK); // don't block
+                })
+            );
 
-            .authenticationEntryPoint((request, response, authException) -> {
-                System.out.println("UNAUTHENTICATED ACCESS: " + request.getRequestURI());
-                response.setStatus(HttpServletResponse.SC_OK);
-            })
-        );
+        // Automatically authenticate demo user
+        http.addFilterBefore((request, response, chain) -> {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                userRepository.findByUsername("music-man").ifPresent(demoUser -> {
+                    UserDetails userDetails = User.withUsername(demoUser.getUsername())
+                        .password(demoUser.getPassword())
+                        .roles(demoUser.getRoles().toArray(String[]::new))
+                        .build();
 
-    // Automatically authenticate demo user on every request
-    http.addFilterBefore((request, response, chain) -> {
-        UserModel demoUser = null;
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            demoUser = userRepository.findByUsername("music-man").orElse(null);
-        }
-        if (demoUser != null) {
-            UserDetails userDetails = User.withUsername(demoUser.getUsername())
-                .password(demoUser.getPassword())
-                .roles(demoUser.getRoles().toArray(String[]::new))
-                .build();
+                    UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-            UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                });
+            }
+            chain.doFilter(request, response);
+        }, UsernamePasswordAuthenticationFilter.class);
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
-        chain.doFilter(request, response);
-    }, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
+        return http.build();
     }
 }
