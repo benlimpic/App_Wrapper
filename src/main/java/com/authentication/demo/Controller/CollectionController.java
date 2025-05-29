@@ -31,50 +31,17 @@ public class CollectionController {
         this.collectionRepository = collectionRepository;
     }
 
+
+
     @PostMapping("/create_collection")
-    public String postCollection(
-        @RequestParam("collectionTitle") String title,
-        @RequestParam(value = "collectionCaption", required = false) String caption,
-        @RequestParam("collectionImage") MultipartFile collectionImage,
-        RedirectAttributes redirectAttributes) throws IOException {
-
-        System.out.println("▶️ POST /create_collection hit");
-        System.out.println("Title: " + title);
-        System.out.println("Caption: " + caption);
-        System.out.println("File name: " + (collectionImage != null ? collectionImage.getOriginalFilename() : "null"));
-        System.out.println("File empty? " + (collectionImage == null || collectionImage.isEmpty()));
-
-        if (title == null || title.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Title is required");
-            System.out.println("❌ Title is missing");
-            return "redirect:/create-collection";
-        }
-
-        if (collectionImage == null || collectionImage.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Image is required");
-            System.out.println("❌ Image is missing");
-            return "redirect:/create-collection";
-        }
-
-        try {
-            Map<String, String> collectionDetails = Map.of(
-                "collectionTitle", title,
-                "collectionCaption", caption != null ? caption : ""
-            );
-
-            collectionService.createCollection(collectionDetails, collectionImage);
-            redirectAttributes.addFlashAttribute("message", "Collection created successfully");
-            System.out.println("✅ Collection created. Redirecting to /profile");
-            return "redirect:/profile";
-        } catch (Exception e) {
-            System.err.println("❌ Error creating collection: " + e.getMessage());
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/create-collection";
-        }
+    public String createCollection(@RequestParam String collectionTitle,
+                                @RequestParam String collectionCaption,
+                                @RequestParam("collectionImage") MultipartFile image,
+                                Model model) {
+        System.out.println("REACHED COLLECTION CONTROLLER");
+        // logic
+        return "redirect:/profile";
     }
-
-
 
 
     // UPDATE COLLECTION
