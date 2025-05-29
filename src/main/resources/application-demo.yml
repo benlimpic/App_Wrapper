@@ -1,10 +1,18 @@
 spring:
+  profiles:
+    active: demo
   datasource:
     url: ${JDBC_DATABASE_URL}
     username: ${JDBC_DATABASE_USERNAME}
     password: ${JDBC_DATABASE_PASSWORD}
-  main:
-    allow-circular-references: true
+  web:
+    resources:
+      static-locations: classpath:/static/
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 4MB
+      max-request-size: 4MB
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,6 +20,18 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+server:
+  port: 9090
+  servlet:
+    session:
+      cookie:
+        domain: .benlimpic.info
+        same-site: none
+        secure: true
+
+app:
+  base-url: https://shelved-demo-app.benlimpic.info
 
 aws:
   s3:
@@ -23,15 +43,3 @@ aws:
     AWS_S3_BUCKET_PROFILE_IMAGES: ${AWS_S3_BUCKET_PROFILE_IMAGES}
     AWS_S3_BUCKET_COLLECTION_IMAGES: ${AWS_S3_BUCKET_COLLECTION_IMAGES}
     AWS_S3_BUCKET_ITEM_IMAGES: ${AWS_S3_BUCKET_ITEM_IMAGES}
-
-server:
-  port: ${PORT:8080} # 👈 This is crucial for Heroku
-  servlet:
-    session:
-      cookie:
-        domain: .benlimpic.info # ✅ enables shared session across subdomains if needed
-        same-site: none
-        secure: true
-
-app:
-  base-url: https://shelved-demo-app.benlimpic.info

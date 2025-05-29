@@ -15,15 +15,22 @@ spring:
     url: jdbc:postgresql://${PROD_DB_HOST}:${PROD_DB_PORT}/${PROD_DB_NAME}
     username: ${PROD_DB_USERNAME}
     password: ${PROD_DB_PASSWORD}
-
+  web:
+    resources:
+      static-locations: classpath:/static/
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         ddl-auto: update
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 4MB
+      max-request-size: 4MB
 
 server:
-  port: 7070
+  port: 8080
   servlet:
     session:
       cookie:
