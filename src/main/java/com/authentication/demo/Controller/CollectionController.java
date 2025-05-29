@@ -38,12 +38,19 @@ public class CollectionController {
         @RequestParam("collectionImage") MultipartFile collectionImage,
         RedirectAttributes redirectAttributes) throws IOException {
 
+        System.out.println("POST /create_collection called");
+        System.out.println("Title: " + title);
+        System.out.println("Caption: " + caption);
+        System.out.println("Image: " + (collectionImage != null ? collectionImage.getOriginalFilename() : "null"));
+
         if (title == null || title.isEmpty()) {
+            System.out.println("Validation failed: missing title");
             redirectAttributes.addFlashAttribute("error", "Title is required");
             return "redirect:/create-collection";
         }
 
         if (collectionImage == null || collectionImage.isEmpty()) {
+            System.out.println("Validation failed: missing image");
             redirectAttributes.addFlashAttribute("error", "Image is required");
             return "redirect:/create-collection";
         }
@@ -54,11 +61,15 @@ public class CollectionController {
                 "caption", caption != null ? caption : ""
             );
 
+            System.out.println("Calling collectionService...");
             collectionService.createCollection(collectionDetails, collectionImage);
+            System.out.println("Collection created.");
+
             redirectAttributes.addFlashAttribute("message", "Collection created successfully");
             return "redirect:/profile";
         } catch (Exception e) {
             e.printStackTrace(); // Log the error
+            System.out.println("Error during collection creation: " + e.getMessage());
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/create-collection";
         }
