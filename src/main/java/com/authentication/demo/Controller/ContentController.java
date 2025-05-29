@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.ListUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.authentication.demo.Config.AppProperties;
 import com.authentication.demo.Interface.PopularEntry;
 import com.authentication.demo.Model.CollectionModel;
 import com.authentication.demo.Model.CommentModel;
@@ -47,14 +44,14 @@ public class ContentController {
     private final LikeRepository likeRepository;
     private final CommentService commentService;
     private final PopularService popularService;
-    private final AppProperties appProperties;
 
-    private static final Logger log = LoggerFactory.getLogger(ContentController.class);
+
+
 
     public ContentController(UserRepository repository, UserService userService, CollectionService collectionService,
             ItemService itemService, FollowService followService, LikeService likeService,
             LikeRepository likeRepository,
-            CommentService commentService, PopularService popularService, AppProperties appProperties) {
+            CommentService commentService, PopularService popularService) {
         this.popularService = popularService;
         this.repository = repository;
         this.userService = userService;
@@ -64,7 +61,7 @@ public class ContentController {
         this.likeService = likeService;
         this.likeRepository = likeRepository;
         this.commentService = commentService;
-        this.appProperties = appProperties;
+
     }
 
     @GetMapping("/login")
@@ -179,11 +176,11 @@ public class ContentController {
         UserModel currentUser = userService.getCurrentUser().orElse(null);
         UserModel userProfile = userService.getUserById(userId);
 
-        Boolean isFollwing = followService.isFollowing(currentUser, userProfile);
+        Boolean isFollowing = followService.isFollowing(currentUser, userProfile);
 
         // Fetch the user profile
         if (userProfile == null) {
-            return "redirect:/index"; // Redirect to index if user profile is not found
+            return "redirect:/index"; // Handle missing user profile
         } else if (userProfile.getId().equals(userService.getCurrentUserId())) {
             return "redirect:/profile"; // Redirect to own profile
         }
@@ -201,11 +198,10 @@ public class ContentController {
         // Count Collections
         int collectionCount = collections.size();
         // Add the attributes to model
-        model.addAttribute("isFollowing", isFollwing);
+        model.addAttribute("isFollowing", isFollowing);
         model.addAttribute("collectionCount", collectionCount);
         model.addAttribute("partitionedCollections", partitionedCollections);
         model.addAttribute("userProfile", userProfile);
-
         return handleAuthentication(model, "userProfile");
     }
 
@@ -242,12 +238,9 @@ public class ContentController {
     @GetMapping("/update-profile")
     public String updateProfile(Model model) {
 
-        //Base URL
-        model.addAttribute("baseUrl", appProperties.getBaseUrl());
-
         return handleAuthentication(model, "updateProfile");
     }
-
+        // model.addAttribute("baseUrl", appProperties.getBaseUrl());
     @GetMapping("/update-user-details")
     public String updateUserDetails(Model model) {
         return handleAuthentication(model, "updateUserDetails");
@@ -452,9 +445,6 @@ public class ContentController {
     @GetMapping("/create-item/{collectionId}")
     public String createItem(@PathVariable("collectionId") Long collectionId, Model model) {
 
-        //Base URL
-        model.addAttribute("baseUrl", appProperties.getBaseUrl());
-
         // Add the collectionId to the model
         model.addAttribute("collectionId", collectionId);
         return handleAuthentication(model, "createItem");
@@ -650,9 +640,6 @@ public class ContentController {
             return "redirect:/profile"; // Handle missing item
         }
 
-        //Base URL
-        model.addAttribute("baseUrl", appProperties.getBaseUrl());
-
         model.addAttribute("item", item);
         return handleAuthentication(model, "updateItem");
     }
@@ -665,9 +652,6 @@ public class ContentController {
         if (collection == null) {
             return "redirect:/profile"; // Redirect if the collection is not found
         }
-
-        //Base URL
-        model.addAttribute("baseUrl", appProperties.getBaseUrl());
 
         // Add the collection to the model
         model.addAttribute("collection", collection);
@@ -688,7 +672,7 @@ public class ContentController {
     }
 
     private String handleAuthentication(Model model, String viewName) {
-        try {
+
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getName() != null && !authentication.getName().isEmpty()) {
                 Optional<UserModel> user = repository.findByUsername(authentication.getName());
@@ -698,11 +682,6 @@ public class ContentController {
                 }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace(); // Shows in Heroku logs
-        }
-
         return "redirect:/";
     }
-
 }

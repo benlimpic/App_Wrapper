@@ -2,7 +2,6 @@ package com.authentication.demo.Security;
 
 import java.io.IOException;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -18,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-@Profile("demo")
 public class DemoAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserRepository userRepository;
@@ -28,15 +26,17 @@ public class DemoAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain filterChain
+    ) throws ServletException, IOException {
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            userRepository.findByUsername("music-man").ifPresent(user -> {
-                UserDetails userDetails = User.withUsername(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(user.getRoles().toArray(new String[0]))
+            userRepository.findByUsername("music-man").ifPresent(demoUser -> {
+                UserDetails userDetails = User.withUsername(demoUser.getUsername())
+                    .password(demoUser.getPassword())
+                    .roles(demoUser.getRoles().toArray(new String[0]))
                     .build();
 
                 UsernamePasswordAuthenticationToken auth =

@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.authentication.demo.Repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -16,9 +19,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Profile("demo")
 public class DemoSecurityConfig {
 
+    private final UserRepository userRepository;
     private final DemoAuthenticationFilter demoAuthenticationFilter;
 
-    public DemoSecurityConfig(DemoAuthenticationFilter demoAuthenticationFilter) {
+    public DemoSecurityConfig(UserRepository userRepository, DemoAuthenticationFilter demoAuthenticationFilter) {
+        this.userRepository = userRepository;
         this.demoAuthenticationFilter = demoAuthenticationFilter;
     }
 
@@ -28,8 +33,8 @@ public class DemoSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
@@ -47,17 +52,18 @@ public class DemoSecurityConfig {
                 .anyRequest().authenticated()
             )
             .exceptionHandling(e -> e
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    System.out.println("UNAUTHENTICATED ACCESS (denied): " + request.getRequestURI());
-                    response.sendRedirect("/index");
+                .accessDeniedHandler((req, res, ex) -> {
+                    System.out.println("Denied: " + req.getRequestURI());
+                    res.sendRedirect("/index");
                 })
-                .authenticationEntryPoint((request, response, authException) -> {
-                    System.out.println("UNAUTHENTICATED ACCESS (entrypoint): " + request.getRequestURI());
-                    response.setStatus(HttpServletResponse.SC_OK);
+                .authenticationEntryPoint((req, res, ex) -> {
+                    System.out.println("Unauthenticated: " + req.getRequestURI());
+                    res.setStatus(HttpServletResponse.SC_OK);
                 })
             )
-            .addFilterBefore(demoAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+            .addFilterAfter(demoAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // <- ✅
 
         return http.build();
     }
 }
+
